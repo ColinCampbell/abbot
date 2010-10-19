@@ -5,6 +5,8 @@
 #            and contributors
 # ===========================================================================
 
+require 'Base64'
+
 begin
   require 'net/https'
   SC::HTTPS_ENABLED = true
@@ -71,6 +73,12 @@ module SC
 
         if proxy[:url]
           url = url.sub(/^#{Regexp.escape proxy_url}/, proxy[:url])
+        end
+
+        if proxy[:username] && proxy[:password]
+          information = proxy[:username] + ":" + proxy[:password]
+          SC.logger << "~ Authorized Request: #{information}\n"
+          headers['Authorization'] = "Basic " + Base64::encode64(information)
         end
 
         http_path = [url]
